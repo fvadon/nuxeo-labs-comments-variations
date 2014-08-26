@@ -1,0 +1,114 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html">
+
+  <a name="add_comment"/>
+      <table class="dataInput">
+        <tr>
+          <td>
+			
+			<div xmlns:f="http://java.sun.com/jsf/core"
+			  xmlns:h="http://java.sun.com/jsf/html"
+			  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+			  xmlns:nxu="http://nuxeo.org/nxweb/util"
+			  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+			  xmlns:c="http://java.sun.com/jstl/core"
+			  xmlns:rich="http://richfaces.org/rich"
+			  xmlns:nxh="http://nuxeo.org/nxweb/html"
+			  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+			  
+
+			    <c:set var="width"
+			      value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '530')}" />
+			    <c:set var="height"
+			      value="#{nxu:test(!empty widgetProperty_height, widgetProperty_height, '400')}" />
+			    <c:set var="cols"
+			      value="#{nxu:test(!empty widgetProperty_cols, widgetProperty_cols, '100')}" />
+			    <c:set var="rows"
+			      value="#{nxu:test(!empty widgetProperty_rows, widgetProperty_rows, '25')}" />
+			    <c:set var="editorSelector"
+			      value="#{nxu:test(!empty widgetProperty_editorSelector, widgetProperty_editorSelector, 'mceEditor')}" />
+				  
+			    <nxu:valueHolder id="#{widget.id}_disableHtmlInit"
+			      var="disableHtmlInit"
+			      defaultValue="#{field_1 != null and field_1 != 'text/html'}">
+			      <nxu:set var="disableBinding" value="#{disableHtmlInit}">
+			        <a4j:outputPanel id="#{widget.id}_panel" layout="block">
+			          <nxu:editor id="#{widget.id}_editor" value="#{commentManagerActions.newContent}"
+			            width="#{width}" cols="#{cols}" height="#{height}"
+			            rows="#{rows}" editorSelector="#{editorSelector}"
+			            disableHtmlInit="#{disableBinding}" />
+			        </a4j:outputPanel>
+			      </nxu:set>
+
+			      <br />
+			      
+			      <a4j:commandButton value="#{messages['label.fullscreen.toggle']}"
+			        onclick="return toggleFullscreen(this);" styleClass="button"
+			        id="#{widget.id}_fancybox"
+			        style="#{disableHtmlInit?'':'display: none;'}" />
+					
+			    </nxu:valueHolder>
+
+			    <script>
+			          function changeEditorType(cbo) {
+			            var value = cbo.value;
+			            var id = cbo.id.replace("_editorselector", "");
+			            var escId = id.replace(/:/g, "\\:");
+			            var disableElt = jQuery('#' + escId + '_disableHtmlInit');
+			            var resizeElt = jQuery('#' + escId + '_fancybox');
+			            var editorElt = jQuery('#' + escId + '_editor');
+			            if (value == "text/html") {
+			              addTinyMCE(id + '_editor');
+			              disableElt.attr("value", "false");
+			              resizeElt.css({
+			                "display" : "none"
+			              });
+			              editorElt.removeClass('disableMCEInit');
+			            } else {
+			              removeTinyMCE(id + '_editor');
+			              disableElt.attr("value", "true");
+			              resizeElt.css({
+			                "display" : "inline"
+			              });
+			              editorElt.addClass('disableMCEInit');
+			            }
+			          }
+
+			          function toggleFullscreen(cbo) {
+			            var id = cbo.id.replace("_fancybox", "_panel")
+			                .replace(/:/g, "\\\:");
+			            try {
+			              jQuery('<a href="#' + id + '"></a>').fancybox({
+			                'autoDimensions' : true,
+			                'autoScale' : true,
+			                'transitionIn' : 'none',
+			                'transitionOut' : 'none',
+			                'enableEscapeButton' : true,
+			                'centerOnScroll' : true,
+			                'scrolling' : 'auto',
+			                'fsBtn' : true
+			              }).click();
+			            } catch (err) {
+			              console.error(err);
+			            } finally {
+			              return false;
+			            }
+			          }
+			    </script>
+
+
+			</div>
+			
+          </td>
+        </tr>
+      </table>
+
+  <ui:include src="/incl/comment_buttons.xhtml" />
+
+</div>
